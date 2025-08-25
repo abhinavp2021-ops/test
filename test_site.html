@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Run Club Motivation</title>
+      <style>
+         * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+         }
+         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700;800;900&display=swap');
+         :root {
+         --primary-bg: #0a0a0a;
+         --secondary-bg: #1a1a1a;
+         --accent-color: #ff6b35;
+         --text-primary: #ffffff;
+         --text-secondary: #a0a0a0;
+         --glass-bg: rgba(255, 255, 255, 0.03);
+         --glass-border: rgba(255, 255, 255, 0.1);
+         --gradient-1: linear-gradient(135deg, #ff6b35, #f7931e);
+         --gradient-2: linear-gradient(135deg, #667eea, #764ba2);
+         --gradient-3: linear-gradient(135deg, #f093fb, #f5576c);
+         }
+         body {
+         font-family: 'Inter', sans-serif;
+         background: var(--primary-bg);
+         color: var(--text-primary);
+         overflow-x: hidden;
+         min-height: 100vh;
+         position: relative;
+         }
+         /* Animated Background */
+         .bg-animation {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         z-index: -2;
+         opacity: 0.4;
+         }
+         .bg-animation::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background: 
+         radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.15) 0%, transparent 50%),
+         radial-gradient(circle at 80% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+         radial-gradient(circle at 40% 40%, rgba(240, 147, 251, 0.1) 0%, transparent 50%);
+         animation: backgroundPulse 8s ease-in-out infinite;
+         }
+         .floating-orbs {
+         position: fixed;
+         width: 100%;
+         height: 100%;
+         z-index: -1;
+         }
+         .orb {
+         position: absolute;
+         border-radius: 50%;
+         filter: blur(1px);
+         animation: float 20s infinite ease-in-out;
+         }
+         .orb:nth-child(1) {
+         width: 80px;
+         height: 80px;
+         background: var(--gradient-1);
+         top: 20%;
+         left: 10%;
+         animation-delay: -5s;
+         }
+         .orb:nth-child(2) {
+         width: 120px;
+         height: 120px;
+         background: var(--gradient-2);
+         top: 60%;
+         right: 15%;
+         animation-delay: -2s;
+         }
+         .orb:nth-child(3) {
+         width: 60px;
+         height: 60px;
+         background: var(--gradient-3);
+         bottom: 20%;
+         left: 20%;
+         animation-delay: -8s;
+         }
+         /* Page Transitions */
+         .page {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100vh;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         transition: all 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+         backdrop-filter: blur(10px);
+         }
+         .page.hidden {
+         transform: translateY(-100vh) scale(0.95);
+         opacity: 0;
+         pointer-events: none;
+         }
+         /* Home Page */
+         .home-page {
+         z-index: 3;
+         background: rgba(10, 10, 10, 0.8);
+         }
+         .home-content {
+         text-align: center;
+         padding: 2rem;
+         max-width: 90vw;
+         width: 100%;
+         max-width: 800px;
+         }
+         .question-header {
+         font-family: 'Space Grotesk', sans-serif;
+         font-size: clamp(3rem, 10vw, 6rem);
+         font-weight: 800;
+         line-height: 0.95;
+         margin-bottom: 3rem;
+         background: var(--gradient-1);
+         -webkit-background-clip: text;
+         -webkit-text-fill-color: transparent;
+         background-clip: text;
+         opacity: 0;
+         animation: slideUp 1.5s cubic-bezier(0.77, 0, 0.175, 1) 0.3s forwards;
+         letter-spacing: -2px;
+         }
+         .subtitle {
+         font-size: clamp(1rem, 3vw, 1.5rem);
+         color: var(--text-secondary);
+         margin-bottom: 4rem;
+         opacity: 0;
+         animation: slideUp 1.5s cubic-bezier(0.77, 0, 0.175, 1) 0.6s forwards;
+         }
+         .cta-button {
+         position: relative;
+         background: var(--glass-bg);
+         border: 2px solid var(--glass-border);
+         color: var(--text-primary);
+         font-family: 'Space Grotesk', sans-serif;
+         font-size: clamp(1rem, 2.5vw, 1.3rem);
+         font-weight: 600;
+         padding: clamp(1.2rem, 3vw, 1.8rem) clamp(2.5rem, 6vw, 4rem);
+         border-radius: 50px;
+         cursor: pointer;
+         transition: all 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+         text-transform: uppercase;
+         letter-spacing: 2px;
+         opacity: 0;
+         animation: slideUp 1.5s cubic-bezier(0.77, 0, 0.175, 1) 0.9s forwards;
+         backdrop-filter: blur(20px);
+         overflow: hidden;
+         }
+         .cta-button::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: -100%;
+         width: 100%;
+         height: 100%;
+         background: var(--gradient-1);
+         transition: left 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+         z-index: -1;
+         }
+         .cta-button:hover::before {
+         left: 0;
+         }
+         .cta-button:hover {
+         transform: translateY(-5px) scale(1.05);
+         box-shadow: 
+         0 20px 60px rgba(255, 107, 53, 0.3),
+         0 0 0 1px rgba(255, 107, 53, 0.2);
+         border-color: var(--accent-color);
+         }
+         /* Animation Page */
+         .animation-page {
+         z-index: 2;
+         background: rgba(10, 10, 10, 0.9);
+         }
+         .animation-container {
+         position: relative;
+         text-align: center;
+         }
+         .runner-gif {
+         width: clamp(200px, 40vw, 350px);
+         height: clamp(200px, 40vw, 350px);
+         border-radius: 20px;
+         box-shadow: 
+         0 30px 80px rgba(255, 107, 53, 0.2),
+         0 0 0 1px rgba(255, 255, 255, 0.1);
+         opacity: 0;
+         animation: 
+         fadeInScale 1s ease-out forwards,
+         pulse 2s ease-in-out infinite 1s;
+         object-fit: cover;
+         }
+         .loading-text {
+         font-family: 'Space Grotesk', sans-serif;
+         font-size: clamp(1.5rem, 4vw, 2.5rem);
+         font-weight: 600;
+         margin-top: 2rem;
+         opacity: 0;
+         animation: fadeIn 1s ease-out 0.5s forwards;
+         background: var(--gradient-1);
+         -webkit-background-clip: text;
+         -webkit-text-fill-color: transparent;
+         background-clip: text;
+         }
+         .progress-bar {
+         width: 200px;
+         height: 4px;
+         background: rgba(255, 255, 255, 0.1);
+         margin: 2rem auto;
+         border-radius: 2px;
+         overflow: hidden;
+         opacity: 0;
+         animation: fadeIn 1s ease-out 0.8s forwards;
+         }
+         .progress-fill {
+         height: 100%;
+         background: var(--gradient-1);
+         width: 0%;
+         border-radius: 2px;
+         animation: fillProgress 3s ease-out forwards;
+         }
+         /* Quote Page */
+         .quote-page {
+         z-index: 1;
+         background: rgba(10, 10, 10, 0.9);
+         }
+         .quote-content {
+         text-align: center;
+         padding: 2rem;
+         max-width: 90vw;
+         width: 100%;
+         max-width: 900px;
+         opacity: 0;
+         animation: fadeInUp 1.5s cubic-bezier(0.77, 0, 0.175, 1) 0.2s forwards;
+         }
+         .quote-text {
+         font-family: 'Space Grotesk', sans-serif;
+         font-size: clamp(2.5rem, 8vw, 4.5rem);
+         font-weight: 700;
+         line-height: 1.1;
+         margin-bottom: 2rem;
+         background: var(--gradient-1);
+         -webkit-background-clip: text;
+         -webkit-text-fill-color: transparent;
+         background-clip: text;
+         letter-spacing: -1px;
+         }
+         .quote-author {
+         font-size: clamp(0.9rem, 2vw, 1.1rem);
+         color: var(--text-secondary);
+         margin-bottom: 3rem;
+         text-transform: uppercase;
+         letter-spacing: 3px;
+         font-weight: 500;
+         }
+         .button-group {
+         display: flex;
+         gap: 1rem;
+         justify-content: center;
+         flex-wrap: wrap;
+         }
+         .next-button, .back-button {
+         position: relative;
+         background: var(--glass-bg);
+         border: 2px solid var(--glass-border);
+         color: var(--text-primary);
+         font-family: 'Space Grotesk', sans-serif;
+         font-size: clamp(0.9rem, 2vw, 1rem);
+         font-weight: 600;
+         padding: clamp(1rem, 2.5vw, 1.5rem) clamp(2rem, 4vw, 3rem);
+         border-radius: 50px;
+         cursor: pointer;
+         transition: all 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+         text-transform: uppercase;
+         letter-spacing: 1px;
+         backdrop-filter: blur(20px);
+         overflow: hidden;
+         }
+         .next-button::before, .back-button::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: -100%;
+         width: 100%;
+         height: 100%;
+         background: var(--gradient-2);
+         transition: left 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+         z-index: -1;
+         }
+         .back-button::before {
+         background: var(--gradient-3);
+         }
+         .next-button:hover::before, .back-button:hover::before {
+         left: 0;
+         }
+         .next-button:hover, .back-button:hover {
+         transform: translateY(-3px);
+         box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+         }
+         /* Animations */
+         @keyframes slideUp {
+         from {
+         opacity: 0;
+         transform: translateY(60px);
+         }
+         to {
+         opacity: 1;
+         transform: translateY(0);
+         }
+         }
+         @keyframes fadeInUp {
+         from {
+         opacity: 0;
+         transform: translateY(40px);
+         }
+         to {
+         opacity: 1;
+         transform: translateY(0);
+         }
+         }
+         @keyframes fadeInScale {
+         from {
+         opacity: 0;
+         transform: scale(0.8) rotate(-5deg);
+         }
+         to {
+         opacity: 1;
+         transform: scale(1) rotate(0deg);
+         }
+         }
+         @keyframes fadeIn {
+         from { opacity: 0; }
+         to { opacity: 1; }
+         }
+         @keyframes pulse {
+         0%, 100% { 
+         transform: scale(1);
+         box-shadow: 0 30px 80px rgba(255, 107, 53, 0.2);
+         }
+         50% { 
+         transform: scale(1.05);
+         box-shadow: 0 30px 80px rgba(255, 107, 53, 0.4);
+         }
+         }
+         @keyframes fillProgress {
+         from { width: 0%; }
+         to { width: 100%; }
+         }
+         @keyframes backgroundPulse {
+         0%, 100% { opacity: 0.4; }
+         50% { opacity: 0.6; }
+         }
+         @keyframes float {
+         0%, 100% { 
+         transform: translateY(0px) rotate(0deg); 
+         }
+         33% { 
+         transform: translateY(-20px) rotate(120deg); 
+         }
+         66% { 
+         transform: translateY(20px) rotate(240deg); 
+         }
+         }
+         /* Mobile Optimizations */
+         @media (max-width: 768px) {
+         .home-content, .quote-content {
+         padding: 1.5rem;
+         }
+         .button-group {
+         flex-direction: column;
+         align-items: center;
+         }
+         .next-button, .back-button {
+         width: 100%;
+         max-width: 300px;
+         }
+         }
+         @media (max-width: 480px) {
+         .orb {
+         opacity: 0.6;
+         }
+         .orb:nth-child(1) { width: 60px; height: 60px; }
+         .orb:nth-child(2) { width: 80px; height: 80px; }
+         .orb:nth-child(3) { width: 40px; height: 40px; }
+         }
+         /* Tablet Optimizations */
+         @media (min-width: 769px) and (max-width: 1024px) {
+         .question-header {
+         font-size: 5rem;
+         }
+         .quote-text {
+         font-size: 3.5rem;
+         }
+         }
+         /* Large Screen Enhancements */
+         @media (min-width: 1200px) {
+         .cta-button:hover {
+         transform: translateY(-8px) scale(1.08);
+         }
+         }
+      </style>
+   </head>
+   <body>
+      <!-- Animated Background -->
+      <div class="bg-animation"></div>
+      <!-- Floating Orbs -->
+      <div class="floating-orbs">
+         <div class="orb"></div>
+         <div class="orb"></div>
+         <div class="orb"></div>
+      </div>
+      <!-- Home Page -->
+      <div class="page home-page" id="homePage">
+         <div class="home-content">
+            <h1 class="question-header" id="questionHeader">Are you ready?</h1>
+            <p class="subtitle">Get the motivation you need to crush your run</p>
+            <button class="cta-button" onclick="startAnimation()">Let's Go!</button>
+         </div>
+      </div>
+      <!-- Animation Page -->
+      <div class="page animation-page hidden" id="animationPage">
+         <div class="animation-container">
+            <img src="https://media.giphy.com/media/3o6fIUZTTDl0IDjbZS/giphy.gif" alt="Running Animation" class="runner-gif">
+            <div class="loading-text">Loading Motivation...</div>
+            <div class="progress-bar">
+               <div class="progress-fill"></div>
+            </div>
+         </div>
+      </div>
+      <!-- Quote Page -->
+      <div class="page quote-page hidden" id="quotePage">
+         <div class="quote-content">
+            <p class="quote-text" id="quoteText"></p>
+            <p class="quote-author" id="quoteAuthor"></p>
+            <div class="button-group">
+               <button class="next-button" onclick="getNextQuote()">Next Quote</button>
+               <button class="back-button" onclick="goBack()">Start Over</button>
+            </div>
+         </div>
+      </div>
+      <script>
+         const questions = [
+             "Are you ready?",
+             "Need some fire?",
+             "Ready to dominate?",
+             "Feeling the energy?",
+             "Time to level up?",
+             "Ready to unleash?",
+             "Want to feel alive?",
+             "Need that spark?",
+             "Ready to conquer?",
+             "Feeling unstoppable?",
+             "Time to ignite?",
+             "Ready to soar?",
+             "Want pure power?",
+             "Need motivation?",
+             "Ready to explode?"
+         ];
+         
+         const quotes = [
+             { text: "RUN WILD", author: "Anonymous" },
+             { text: "SWEAT IS FAT CRYING", author: "Anonymous" },
+             { text: "PAIN IS TEMPORARY", author: "Anonymous" },
+             { text: "SHUT UP LEGS", author: "Jens Voigt" },
+             { text: "RUN LIKE YOU STOLE IT", author: "Anonymous" },
+             { text: "STRONG IS THE NEW SKINNY", author: "Anonymous" },
+             { text: "EARN YOUR SHOWER", author: "Anonymous" },
+             { text: "FIND YOUR STRONG", author: "Anonymous" },
+             { text: "NO EXCUSES", author: "Anonymous" },
+             { text: "PUSH HARDER", author: "Anonymous" },
+             { text: "RUN MORE WORRY LESS", author: "Anonymous" },
+             { text: "CHAMPIONS TRAIN", author: "Anonymous" },
+             { text: "MILES ARE EARNED", author: "Anonymous" },
+             { text: "RUN THE DAY", author: "Anonymous" },
+             { text: "STRONGER EVERY MILE", author: "Anonymous" },
+             { text: "FAST FEET HAPPY HEART", author: "Anonymous" },
+             { text: "RUN YOUR HEART OUT", author: "Anonymous" },
+             { text: "EMBRACE THE PACE", author: "Anonymous" },
+             { text: "KEEP RUNNING", author: "Anonymous" },
+             { text: "BEAST MODE ON", author: "Anonymous" },
+             { text: "RUN FREE", author: "Anonymous" },
+             { text: "PACE YOURSELF", author: "Anonymous" },
+             { text: "RUN HAPPY", author: "Anonymous" },
+             { text: "HUSTLE FOR THE MUSCLE", author: "Anonymous" },
+             { text: "RUN FEARLESS", author: "Anonymous" },
+             { text: "MIND OVER MILES", author: "Anonymous" },
+             { text: "RUN BOLD", author: "Anonymous" },
+             { text: "SWEAT NOW SHINE LATER", author: "Anonymous" },
+             { text: "RUN UNSTOPPABLE", author: "Anonymous" },
+             { text: "BORN TO RUN", author: "Anonymous" },
+             { text: "EVERY MILE MATTERS", author: "Anonymous" },
+             { text: "RUN LIKE LIGHTNING", author: "Anonymous" },
+             { text: "FUEL THE FIRE", author: "Anonymous" },
+             { text: "CHASE YOUR DREAMS", author: "Anonymous" },
+             { text: "RUN WITH PASSION", author: "Anonymous" }
+         ];
+         
+         let usedQuotes = [];
+         let currentPage = 'home';
+         
+         function getRandomQuestion() {
+             return questions[Math.floor(Math.random() * questions.length)];
+         }
+         
+         function startAnimation() {
+             const homeEl = document.getElementById('homePage');
+             const animationEl = document.getElementById('animationPage');
+             
+             homeEl.classList.add('hidden');
+             animationEl.classList.remove('hidden');
+             
+             // Add some screen shake effect
+             document.body.style.animation = 'shake 0.5s ease-in-out';
+             
+             setTimeout(() => {
+                 document.body.style.animation = '';
+                 showQuotePage();
+             }, 3500);
+         }
+         
+         function showQuotePage() {
+             const animationEl = document.getElementById('animationPage');
+             const quoteEl = document.getElementById('quotePage');
+             
+             animationEl.classList.add('hidden');
+             quoteEl.classList.remove('hidden');
+             displayRandomQuote();
+         }
+         
+         function displayRandomQuote() {
+             if (usedQuotes.length >= quotes.length) {
+                 usedQuotes = [];
+             }
+             
+             let availableQuotes = quotes.filter((_, index) => !usedQuotes.includes(index));
+             let randomIndex = Math.floor(Math.random() * availableQuotes.length);
+             let selectedQuote = availableQuotes[randomIndex];
+             let originalIndex = quotes.indexOf(selectedQuote);
+             
+             usedQuotes.push(originalIndex);
+             
+             const quoteText = document.getElementById('quoteText');
+             const quoteAuthor = document.getElementById('quoteAuthor');
+             
+             // Add fade out effect
+             quoteText.style.opacity = '0';
+             quoteAuthor.style.opacity = '0';
+             
+             setTimeout(() => {
+                 quoteText.textContent = `"${selectedQuote.text}"`;
+                 quoteAuthor.textContent = `— ${selectedQuote.author}`;
+                 
+                 // Fade back in
+                 quoteText.style.opacity = '1';
+                 quoteAuthor.style.opacity = '1';
+             }, 300);
+         }
+         
+         function getNextQuote() {
+             displayRandomQuote();
+         }
+         
+         function goBack() {
+             const quoteEl = document.getElementById('quotePage');
+             const homeEl = document.getElementById('homePage');
+             
+             quoteEl.classList.add('hidden');
+             homeEl.classList.remove('hidden');
+             
+             // Reset with new question
+             document.getElementById('questionHeader').textContent = getRandomQuestion();
+             usedQuotes = [];
+         }
+         
+         // Add keyboard support
+         document.addEventListener('keydown', (e) => {
+             if (e.code === 'Space' || e.code === 'Enter') {
+                 const homePage = document.getElementById('homePage');
+                 const quotePage = document.getElementById('quotePage');
+                 
+                 if (!homePage.classList.contains('hidden')) {
+                     startAnimation();
+                 } else if (!quotePage.classList.contains('hidden')) {
+                     getNextQuote();
+                 }
+             }
+             
+             if (e.code === 'Escape') {
+                 goBack();
+             }
+         });
+         
+         // Touch gesture support for mobile
+         let touchStartX = 0;
+         let touchEndX = 0;
+         
+         document.addEventListener('touchstart', (e) => {
+             touchStartX = e.changedTouches[0].screenX;
+         });
+         
+         document.addEventListener('touchend', (e) => {
+             touchEndX = e.changedTouches[0].screenX;
+             handleSwipe();
+         });
+         
+         function handleSwipe() {
+             const quotePage = document.getElementById('quotePage');
+             if (quotePage.classList.contains('hidden')) return;
+             
+             const swipeThreshold = 50;
+             if (touchEndX < touchStartX - swipeThreshold) {
+                 getNextQuote(); // Swipe left for next quote
+             } else if (touchEndX > touchStartX + swipeThreshold) {
+                 goBack(); // Swipe right to go back
+             }
+         }
+         
+         // Initialize
+         window.onload = function() {
+             document.getElementById('questionHeader').textContent = getRandomQuestion();
+             
+             // Add subtle parallax effect to orbs
+             document.addEventListener('mousemove', (e) => {
+                 const orbs = document.querySelectorAll('.orb');
+                 const x = e.clientX / window.innerWidth;
+                 const y = e.clientY / window.innerHeight;
+                 
+                 orbs.forEach((orb, index) => {
+                     const speed = (index + 1) * 0.5;
+                     const xOffset = (x - 0.5) * speed * 20;
+                     const yOffset = (y - 0.5) * speed * 20;
+                     orb.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+                 });
+             });
+         }
+         
+         // Add shake animation
+         const style = document.createElement('style');
+         style.textContent = `
+             @keyframes shake {
+                 0%, 100% { transform: translateX(0); }
+                 25% { transform: translateX(-2px); }
+                 75% { transform: translateX(2px); }
+             }
+         `;
+         document.head.appendChild(style);
+      </script>
+   </body>
+</html>
